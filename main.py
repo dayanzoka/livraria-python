@@ -3,7 +3,7 @@ import shutil
 import csv
 from pathlib import Path
 from datetime import datetime
-from banco import BancoDeDados
+from banco import criar_tabela, adicionar_livro, exibir_livros, atualizar_preco, remover_livro, buscar_por_autor
 
 BASE_DIR = Path("meu_sistema_livraria")
 BACKUP_DIR = BASE_DIR / "backups"
