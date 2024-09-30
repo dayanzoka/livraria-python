@@ -1,9 +1,11 @@
+import banco
 import os
 import shutil
 import csv
 from pathlib import Path
 from datetime import datetime
 from banco import criar_tabela, adicionar_livro, exibir_livros, atualizar_preco, remover_livro, buscar_por_autor
+
 
 BASE_DIR = Path("meu_sistema_livraria")
 BACKUP_DIR = BASE_DIR / "backups"
@@ -13,7 +15,7 @@ DB_FILE = Path("meu_sistema_livraria/data/livraria.db")
 os.makedirs(BACKUP_DIR, exist_ok=True)
 os.makedirs(EXPORT_DIR, exist_ok=True)
 
-db = BancoDeDados()  
+banco.criar_tabela()
 
 def fazer_backup():
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -22,7 +24,7 @@ def fazer_backup():
     print(f"Backup realizado em: {backup_file}")
 
 def exportar_para_csv():
-    livros = db.exibir_livros()
+    livros = banco.exibir_livros()
     if livros:
         csv_file = EXPORT_DIR / "livros_exportados.csv"
         with open(csv_file, mode='w', newline='', encoding='utf-8') as f:
@@ -38,7 +40,7 @@ def importar_de_csv(csv_file_path):
         reader = csv.DictReader(f)
         livros = [(row["Título"], row["Autor"], row["Ano de Publicação"], row["Preço"]) for row in reader]
     for livro in livros:
-        db.adicionar_livro(livro[0], livro[1], int(livro[2]), float(livro[3]))
+        banco.adicionar_livro(livro[0], livro[1], int(livro[2]), float(livro[3]))
     fazer_backup()
 
 def adicionar_livro():
@@ -46,11 +48,11 @@ def adicionar_livro():
     autor = input("Autor: ")
     ano_publicacao = int(input("Ano de Publicação: "))
     preco = float(input("Preço: "))
-    db.adicionar_livro(titulo, autor, ano_publicacao, preco)
+    banco.adicionar_livro(titulo, autor, ano_publicacao, preco)
     fazer_backup()
 
 def exibir_livros():
-    livros = db.exibir_livros()
+    livros = banco.exibir_livros()
     if livros:
         for livro in livros:
             print(f"ID: {livro[0]}, Título: {livro[1]}, Autor: {livro[2]}, Ano: {livro[3]}, Preço: {livro[4]}")
@@ -60,17 +62,17 @@ def exibir_livros():
 def atualizar_preco():
     id_livro = int(input("ID do Livro: "))
     novo_preco = float(input("Novo Preço: "))
-    db.atualizar_preco(id_livro, novo_preco)
+    banco.atualizar_preco(id_livro, novo_preco)
     fazer_backup()
 
 def remover_livro():
     id_livro = int(input("ID do Livro a ser removido: "))
-    db.remover_livro(id_livro)
+    banco.remover_livro(id_livro)
     fazer_backup()
 
 def buscar_por_autor():
     autor = input("Autor: ")
-    livros = db.buscar_por_autor(autor)
+    livros = banco.buscar_por_autor(autor)
     if livros:
         for livro in livros:
             print(f"ID: {livro[0]}, Título: {livro[1]}, Autor: {livro[2]}, Ano: {livro[3]}, Preço: {livro[4]}")
